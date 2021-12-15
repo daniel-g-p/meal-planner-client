@@ -8,10 +8,17 @@ export default {
       component: () => import("../components/ingredients/IngredientList.vue"),
       children: [
         {
-          path: ":ingredientId",
+          path: "new",
+          name: "newIngredient",
+          component: () =>
+            import("../components/ingredients/IngredientForm.vue"),
+        },
+        {
+          path: "edit/:ingredientId",
           name: "ingredientsItem",
           component: () =>
             import("../components/ingredients/IngredientForm.vue"),
+          props: true,
         },
       ],
     },

@@ -2,7 +2,9 @@
   <div>
     <router-view></router-view>
     <app-title>Ingredients</app-title>
-    <app-button>New Ingredient</app-button>
+    <router-link :to="newIngredientLink">
+      <app-button>New Ingredient</app-button>
+    </router-link>
     <main class="ingredients">
       <p v-if="!ingredients.length">
         Add your first ingredient to get started.
@@ -43,10 +45,11 @@ export default {
     const ingredients = computed(() => {
       return store.getters["ingredients/getAll"];
     });
+    const newIngredientLink = { name: "newIngredient" };
     onMounted(() => {
       store.dispatch("ingredients/fetchAll");
     });
-    return { ingredients };
+    return { ingredients, newIngredientLink };
   },
 };
 </script>

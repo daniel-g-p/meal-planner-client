@@ -1,5 +1,7 @@
 <template>
-  <button class="button" :class="colorClass"><slot></slot></button>
+  <button class="button" :class="colorClass" @click="click">
+    <slot></slot>
+  </button>
 </template>
 
 <script>
@@ -15,7 +17,8 @@ export default {
       },
     },
   },
-  setup(props) {
+  emits: ["click"],
+  setup(props, { emit }) {
     const colorClass = computed(() => {
       if (props.color === "red") {
         return { "button--red": true };
@@ -25,7 +28,10 @@ export default {
         return { "button--green": true };
       }
     });
-    return { colorClass };
+    const click = () => {
+      emit("click");
+    };
+    return { colorClass, click };
   },
 };
 </script>
