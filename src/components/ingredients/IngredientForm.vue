@@ -124,19 +124,21 @@ export default {
         );
         if (response.ok) {
           store.dispatch("ingredients/fetchAll");
+          store.dispatch("meals/fetchAll");
           goBack();
         }
       } catch (error) {
         console.log(error);
       }
     };
-    const deleteIngredient = async() => {
+    const deleteIngredient = async () => {
       const response = await apiCall(
         `ingredients/${props.ingredientId}`,
         "DELETE"
       );
       if (response.ok) {
         store.dispatch("ingredients/fetchAll");
+        store.dispatch("meals/fetchAll");
         goBack();
       }
     };

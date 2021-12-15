@@ -10,7 +10,7 @@
         Add your first ingredient to get started.
       </p>
       <ul v-else class="ingredients__list">
-        <ingredients-header></ingredients-header>
+        <app-table-header></app-table-header>
         <li v-for="ingredient in ingredients" :key="ingredient.id">
           <ingredients-item
             :id="ingredient._id"
@@ -32,12 +32,10 @@
 import { computed, onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 
-import IngredientsHeader from "./IngredientsHeader.vue";
 import IngredientsItem from "./IngredientsItem.vue";
 
 export default {
   components: {
-    IngredientsHeader,
     IngredientsItem,
   },
   setup() {
