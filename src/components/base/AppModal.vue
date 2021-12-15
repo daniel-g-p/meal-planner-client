@@ -50,6 +50,7 @@ export default {
   &__header {
     display: flex;
     align-items: flex-start;
+    margin-bottom: 1rem;
   }
   &__title {
     font-weight: 400;

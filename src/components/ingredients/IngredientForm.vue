@@ -13,7 +13,7 @@
           :fields="unitOptions"
           fieldId="measuringUnit"
           label="Measuring unit"
-          v-model="form.measuringUnit"
+          v-model="form.unit"
         ></app-radio-field>
       </div>
       <div class="form__field--large">
@@ -28,31 +28,22 @@
       <div class="form__field--small">
         <app-textbox
           type="number"
-          field-id="fats"
-          label="Fats (g)"
-          placeholder="0"
-          v-model="form.fats"
-        ></app-textbox>
-      </div>
-      <div class="form__field--large">
-        <app-textbox
-          type="number"
-          field-id="protein"
-          label="Protein (g)"
-          placeholder="0"
-          v-model="form.protein"
-        ></app-textbox>
-      </div>
-      <div class="form__field--small">
-        <app-textbox
-          type="number"
           field-id="sugars"
           label="Sugars (g)"
           placeholder="0"
           v-model="form.sugars"
         ></app-textbox>
       </div>
-      <div class="form__field--full">
+      <div class="form__field--large">
+        <app-textbox
+          type="number"
+          field-id="fats"
+          label="Fats (g)"
+          placeholder="0"
+          v-model="form.fats"
+        ></app-textbox>
+      </div>
+      <div class="form__field--small">
         <app-textbox
           type="number"
           field-id="saturatedFats"
@@ -61,11 +52,22 @@
           v-model="form.saturatedFats"
         ></app-textbox>
       </div>
-      <div class="form__buttons form__field--full">
-        <app-button>Confirm</app-button>
-        <app-button color="red">Delete</app-button>
+      <div class="form__field--full">
+        <app-textbox
+          type="number"
+          field-id="protein"
+          label="Protein (g)"
+          placeholder="0"
+          v-model="form.protein"
+        ></app-textbox>
       </div>
     </form>
+    <div class="form__buttons form__field--full">
+      <app-button @click="submit">Confirm</app-button>
+      <app-button v-if="ingredientId" color="red" @click="deleteIngredient"
+        >Delete</app-button
+      >
+    </div>
   </app-modal>
 </template>
 
@@ -74,6 +76,8 @@ import { computed, reactive } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+
+import apiCall from "../../mixins/api-call.js";
 
 export default {
   props: {
@@ -85,7 +89,7 @@ export default {
   setup(props) {
     const form = reactive({
       name: "",
-      measuringUnit: "100g",
+      unit: "100g",
       carbohydrates: 0,
       fats: 0,
       protein: 0,
@@ -109,8 +113,32 @@ export default {
     const title = computed(() => {
       return props.ingredientId ? "Edit Ingredient" : "New Ingredient";
     });
-    const submit = () => {
-      console.log("SUBMIT");
+    const submit = async () => {
+      try {
+        const id = props.ingredientId;
+        const response = await apiCall(
+          id ? `ingredients/${id}` : "ingredients",
+          id ? "PUT" : "POST",
+          false,
+          { ingredient: form }
+        );
+        if (response.ok) {
+          store.dispatch("ingredients/fetchAll");
+          goBack();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const deleteIngredient = async() => {
+      const response = await apiCall(
+        `ingredients/${props.ingredientId}`,
+        "DELETE"
+      );
+      if (response.ok) {
+        store.dispatch("ingredients/fetchAll");
+        goBack();
+      }
     };
     const router = useRouter();
     const goBack = () => {
@@ -126,7 +154,7 @@ export default {
         goBack();
       }
     });
-    return { form, unitOptions, title, submit, goBack };
+    return { form, unitOptions, title, submit, deleteIngredient, goBack };
   },
 };
 </script>
@@ -151,6 +179,7 @@ export default {
   &__buttons {
     display: flex;
     gap: 0.5rem;
+    margin-top: 1rem;
   }
 }
 </style>
