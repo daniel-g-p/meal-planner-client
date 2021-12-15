@@ -9,6 +9,11 @@
         ></app-textbox>
       </div>
     </form>
+    <meal-ingredients
+      v-if="mealIngredients.length"
+      :ingredients="mealIngredients"
+    ></meal-ingredients>
+    <meal-ingredient-search @add="addIngredient"></meal-ingredient-search>
     <div class="form__buttons form__field--full">
       <app-button @click="submit">Confirm</app-button>
       <app-button v-if="mealId" color="red" @click="deleteMeal"
@@ -26,7 +31,14 @@ import { useStore } from "vuex";
 
 import apiCall from "../../mixins/api-call.js";
 
+import MealIngredients from "./MealIngredients.vue";
+import MealIngredientSearch from "./MealIngredientSearch.vue";
+
 export default {
+  components: {
+    MealIngredients,
+    MealIngredientSearch,
+  },
   props: {
     mealId: {
       type: String,
@@ -34,6 +46,9 @@ export default {
     },
   },
   setup(props) {
+    const title = computed(() => {
+      return props.mealId ? "Edit Meal" : "New Meal";
+    });
     const form = "";
     const mealName = ref("");
     const store = useStore();
@@ -43,9 +58,22 @@ export default {
         return mealList.find((item) => item._id === props.mealId);
       }
     });
-    const title = computed(() => {
-      return props.mealId ? "Edit Meal" : "New Meal";
+    const allIngredients = computed(() => {
+      return store.getters["ingredients/getAll"];
     });
+    const mealIngredients = ref([]);
+    const addIngredient = (ingredientId) => {
+      const existingItem = mealIngredients.value.find((ingredient) => {
+        return ingredient.id === ingredientId;
+      });
+      if (!existingItem) {
+        const { name, unit } = allIngredients.value.find((ingredient) => {
+          return ingredient._id === ingredientId;
+        });
+        const item = { id: ingredientId, name, unit, quantity: 0 };
+        mealIngredients.value.push(item);
+      }
+    };
     const submit = async () => {
       try {
         const id = props.mealId;
@@ -84,7 +112,15 @@ export default {
         goBack();
       }
     });
-    return { mealName, title, submit, deleteMeal, goBack };
+    return {
+      mealName,
+      mealIngredients,
+      addIngredient,
+      title,
+      submit,
+      deleteMeal,
+      goBack,
+    };
   },
 };
 </script>

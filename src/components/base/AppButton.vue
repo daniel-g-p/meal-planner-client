@@ -13,7 +13,7 @@ export default {
       type: String,
       default: "green",
       validator: (value) => {
-        return ["green", "red", "grey"].includes(value);
+        return ["green", "red", "grey", "light"].includes(value);
       },
     },
   },
@@ -24,6 +24,8 @@ export default {
         return { "button--red": true };
       } else if (props.color === "grey") {
         return { "button--grey": true };
+      } else if (props.color === "light") {
+        return { "button--light": true };
       } else {
         return { "button--green": true };
       }
@@ -61,6 +63,13 @@ export default {
     &:hover,
     &:focus {
       background-color: lighten($grey-dark, 5);
+    }
+  }
+  &--light {
+    background-color: $grey-light;
+    &:hover,
+    &:focus {
+      background-color: lighten($grey-light, 5);
     }
   }
 }
