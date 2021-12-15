@@ -2,7 +2,9 @@
   <nav class="nav">
     <ul class="nav__container">
       <li v-for="link in links" :key="link.name" class="nav__item">
-        <router-link :to="link" class="nav__link">{{ link.label }}</router-link>
+        <router-link :to="{ name: link.name }" class="nav__link">{{
+          link.label
+        }}</router-link>
       </li>
     </ul>
   </nav>
