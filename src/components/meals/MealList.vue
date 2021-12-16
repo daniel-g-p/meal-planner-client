@@ -55,21 +55,17 @@ export default {
               return item._id === id;
             });
           if (unit === "100g" || unit === "100ml") {
-            nutrients.carbohydrates += Math.round(
-              (quantity * carbohydrates) / 100
-            );
-            nutrients.sugars += Math.round((quantity * sugars) / 100);
-            nutrients.fats += Math.round((quantity * fats) / 100);
-            nutrients.saturatedFats += Math.round(
-              (quantity * saturatedFats) / 100
-            );
-            nutrients.protein += Math.round((quantity * protein) / 100);
+            nutrients.carbohydrates += (quantity * carbohydrates) / 100;
+            nutrients.sugars += (quantity * sugars) / 100;
+            nutrients.fats += (quantity * fats) / 100;
+            nutrients.saturatedFats += (quantity * saturatedFats) / 100;
+            nutrients.protein += (quantity * protein) / 100;
           } else {
-            nutrients.carbohydrates += Math.round(quantity * carbohydrates);
-            nutrients.sugars += Math.round(quantity * sugars);
-            nutrients.fats += Math.round(quantity * fats);
-            nutrients.saturatedFats += Math.round(quantity * saturatedFats);
-            nutrients.protein += Math.round(quantity * protein);
+            nutrients.carbohydrates += quantity * carbohydrates;
+            nutrients.sugars += quantity * sugars;
+            nutrients.fats += quantity * fats;
+            nutrients.saturatedFats += quantity * saturatedFats;
+            nutrients.protein += quantity * protein;
           }
         }
         return {

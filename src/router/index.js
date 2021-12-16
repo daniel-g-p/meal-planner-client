@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import plans from "./plans.js";
 import meals from "./meals.js";
 import ingredients from "./ingredients.js";
 
@@ -9,11 +8,10 @@ export default createRouter({
   routes: [
     {
       path: "/",
-      redirect: { name: "plans" },
+      redirect: { name: "meals" },
     },
-    plans,
     meals,
     ingredients,
-    { path: "/:pathMatch(.*)*", redirect: { name: "plans" } },
+    { path: "/:pathMatch(.*)*", redirect: { name: "meals" } },
   ],
 });

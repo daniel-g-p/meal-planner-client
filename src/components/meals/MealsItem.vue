@@ -2,11 +2,11 @@
   <router-link :to="link" class="meal">
     <app-grid class="meal__content">
       <div>{{ name }}</div>
-      <div>{{ carbohydrates }}g</div>
-      <div>{{ fats }}g</div>
-      <div>{{ protein }}g</div>
-      <div>{{ sugars }}g</div>
-      <div>{{ saturatedFats }}g</div>
+      <div>{{ data.carbohydrates }}g</div>
+      <div>{{ data.fats }}g</div>
+      <div>{{ data.protein }}g</div>
+      <div>{{ data.sugars }}g</div>
+      <div>{{ data.saturatedFats }}g</div>
     </app-grid>
   </router-link>
 </template>
@@ -28,7 +28,16 @@ export default {
     const link = computed(() => {
       return { name: "mealsItem", params: { mealId: props.id } };
     });
-    return { link };
+    const data = computed(() => {
+      return {
+        carbohydrates: Math.round(props.carbohydrates * 10) / 10,
+        sugars: Math.round(props.sugars * 10) / 10,
+        fats: Math.round(props.fats * 10) / 10,
+        saturatedFats: Math.round(props.saturatedFats * 10) / 10,
+        protein: Math.round(props.protein * 10) / 10,
+      };
+    });
+    return { link, data };
   },
 };
 </script>

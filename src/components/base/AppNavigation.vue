@@ -16,7 +16,6 @@ export default {
     const links = [
       { name: "ingredients", label: "Ingredients" },
       { name: "meals", label: "Meals" },
-      { name: "plans", label: "Plans" },
     ];
     return { links };
   },

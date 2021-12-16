@@ -126,6 +126,8 @@ export default {
           store.dispatch("ingredients/fetchAll");
           store.dispatch("meals/fetchAll");
           goBack();
+        } else {
+          alert(response.error);
         }
       } catch (error) {
         console.log(error);
@@ -138,6 +140,8 @@ export default {
       );
       if (response.ok) {
         goBack();
+      } else {
+        alert(response.error);
       }
     };
     const router = useRouter();

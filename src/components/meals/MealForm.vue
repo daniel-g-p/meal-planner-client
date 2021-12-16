@@ -106,6 +106,8 @@ export default {
         );
         if (response.ok) {
           goBack();
+        } else {
+          alert(response.error);
         }
       } catch (error) {
         console.log(error);
@@ -115,6 +117,8 @@ export default {
       const response = await apiCall(`meals/${props.mealId}`, "DELETE");
       if (response.ok) {
         goBack();
+      } else {
+        alert(response.error);
       }
     };
     const router = useRouter();
