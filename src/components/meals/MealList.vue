@@ -2,7 +2,7 @@
   <div>
     <router-view></router-view>
     <app-title>Meals</app-title>
-    <router-link :to="newMealLink">
+    <router-link :to="{ name: 'newMeal' }">
       <app-button>New Meal</app-button>
     </router-link>
     <main class="meals">
@@ -80,12 +80,12 @@ export default {
         };
       });
     });
-    const newMealLink = { name: "newMeal" };
-    onMounted(() => {
+    const init = () => {
       store.dispatch("ingredients/fetchAll");
       store.dispatch("meals/fetchAll");
-    });
-    return { meals, newMealLink };
+    };
+    onMounted(() => init());
+    return { meals };
   },
 };
 </script>

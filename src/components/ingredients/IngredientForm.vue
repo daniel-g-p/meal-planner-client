@@ -87,6 +87,16 @@ export default {
     },
   },
   setup(props) {
+    const title = computed(() => {
+      return props.ingredientId ? "Edit Ingredient" : "New Ingredient";
+    });
+    const store = useStore();
+    const ingredient = computed(() => {
+      if (props.ingredientId) {
+        const ingredientList = store.getters["ingredients/getAll"];
+        return ingredientList.find((item) => item._id === props.ingredientId);
+      }
+    });
     const form = reactive({
       name: "",
       unit: "100g",
@@ -103,16 +113,6 @@ export default {
       { id: "tsp", label: "tsp" },
       { id: "tbsp", label: "tbsp" },
     ];
-    const store = useStore();
-    const ingredient = computed(() => {
-      if (props.ingredientId) {
-        const ingredientList = store.getters["ingredients/getAll"];
-        return ingredientList.find((item) => item._id === props.ingredientId);
-      }
-    });
-    const title = computed(() => {
-      return props.ingredientId ? "Edit Ingredient" : "New Ingredient";
-    });
     const submit = async () => {
       try {
         const id = props.ingredientId;
@@ -137,13 +137,13 @@ export default {
         "DELETE"
       );
       if (response.ok) {
-        store.dispatch("ingredients/fetchAll");
-        store.dispatch("meals/fetchAll");
         goBack();
       }
     };
     const router = useRouter();
     const goBack = () => {
+      store.dispatch("ingredients/fetchAll");
+      store.dispatch("meals/fetchAll");
       router.push({ name: "ingredients" });
     };
     onMounted(() => {

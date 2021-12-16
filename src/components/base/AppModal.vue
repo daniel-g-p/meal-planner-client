@@ -44,8 +44,7 @@ export default {
   &__box {
     background-color: $white;
     padding: 1.5rem;
-    min-width: 24rem;
-    max-width: 36rem;
+    width: 30rem;
   }
   &__header {
     display: flex;

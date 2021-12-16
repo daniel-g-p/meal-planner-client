@@ -5,15 +5,17 @@
         <app-textbox
           field-id="mealName"
           label="Meal Name"
-          v-model="mealName"
+          v-model="form.name"
         ></app-textbox>
       </div>
     </form>
     <meal-ingredients
-      v-if="mealIngredients.length"
-      :ingredients="mealIngredients"
+      v-if="form.ingredients.length"
+      :ingredients="form.ingredients"
+      @set-quantity="setQuantity"
+      @remove="removeItem"
     ></meal-ingredients>
-    <meal-ingredient-search @add="addIngredient"></meal-ingredient-search>
+    <meal-ingredient-search @add="addItem"></meal-ingredient-search>
     <div class="form__buttons form__field--full">
       <app-button @click="submit">Confirm</app-button>
       <app-button v-if="mealId" color="red" @click="deleteMeal"
@@ -24,7 +26,7 @@
 </template>
 
 <script>
-import { computed, ref } from "@vue/reactivity";
+import { computed, reactive } from "@vue/reactivity";
 import { onMounted } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -46,33 +48,43 @@ export default {
     },
   },
   setup(props) {
-    const title = computed(() => {
-      return props.mealId ? "Edit Meal" : "New Meal";
-    });
-    const form = "";
-    const mealName = ref("");
+    const title = computed(() => (props.mealId ? "Edit Meal" : "New Meal"));
     const store = useStore();
+    const allIngredients = computed(() => store.getters["ingredients/getAll"]);
     const meal = computed(() => {
       if (props.mealId) {
         const mealList = store.getters["meals/getAll"];
         return mealList.find((item) => item._id === props.mealId);
       }
     });
-    const allIngredients = computed(() => {
-      return store.getters["ingredients/getAll"];
+    const form = reactive({
+      name: "",
+      ingredients: [],
     });
-    const mealIngredients = ref([]);
-    const addIngredient = (ingredientId) => {
-      const existingItem = mealIngredients.value.find((ingredient) => {
-        return ingredient.id === ingredientId;
-      });
+    const findIngredientIndex = (array, idProperty, ingredientId) => {
+      return array.findIndex((item) => item[idProperty] === ingredientId);
+    };
+    const findIngredient = (array, idProperty, ingredientId) => {
+      return array.find((item) => item[idProperty] === ingredientId);
+    };
+    const addItem = (ingredientId) => {
+      const existingItem = findIngredient(form.ingredients, "id", ingredientId);
       if (!existingItem) {
-        const { name, unit } = allIngredients.value.find((ingredient) => {
-          return ingredient._id === ingredientId;
-        });
-        const item = { id: ingredientId, name, unit, quantity: 0 };
-        mealIngredients.value.push(item);
+        const { name, unit } = findIngredient(
+          allIngredients.value,
+          "_id",
+          ingredientId
+        );
+        form.ingredients.push({ id: ingredientId, name, unit, quantity: 0 });
       }
+    };
+    const setQuantity = (ingredientId, quantity) => {
+      const index = findIngredientIndex(form.ingredients, "id", ingredientId);
+      form.ingredients[index].quantity = +quantity;
+    };
+    const removeItem = (ingredientId) => {
+      const index = findIngredientIndex(form.ingredients, "id", ingredientId);
+      form.ingredients.splice(index, 1);
     };
     const submit = async () => {
       try {
@@ -81,10 +93,18 @@ export default {
           id ? `meals/${id}` : "meals",
           id ? "PUT" : "POST",
           false,
-          { meal: form }
+          {
+            meal: {
+              name: form.name,
+              ingredients: form.ingredients
+                .filter((ingredient) => ingredient.quantity)
+                .map((ingredient) => {
+                  return { id: ingredient.id, quantity: ingredient.quantity };
+                }),
+            },
+          }
         );
         if (response.ok) {
-          store.dispatch("meals/fetchAll");
           goBack();
         }
       } catch (error) {
@@ -94,29 +114,28 @@ export default {
     const deleteMeal = async () => {
       const response = await apiCall(`meals/${props.mealId}`, "DELETE");
       if (response.ok) {
-        store.dispatch("meals/fetchAll");
         goBack();
       }
     };
     const router = useRouter();
     const goBack = () => {
+      store.dispatch("ingredients/fetchAll");
+      store.dispatch("meals/fetchAll");
       router.push({ name: "meals" });
     };
-    onMounted(() => {
+    const init = () => {
       if (meal.value) {
-        const fields = Object.keys(form);
-        for (let field of fields) {
-          form[field] = meal.value[field];
-        }
-      } else if (props.mealId) {
-        goBack();
+        form.name = meal.value.name;
+        form.ingredients = meal.value.ingredients;
       }
-    });
+    };
+    onMounted(() => init());
     return {
-      mealName,
-      mealIngredients,
-      addIngredient,
       title,
+      form,
+      addItem,
+      setQuantity,
+      removeItem,
       submit,
       deleteMeal,
       goBack,

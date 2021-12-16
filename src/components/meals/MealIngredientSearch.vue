@@ -25,16 +25,18 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
 export default {
   setup(props, { emit }) {
     const store = useStore();
     const searchQuery = ref("");
-    const ingredients = store.getters["ingredients/getAll"];
+    const ingredients = computed(() => {
+      return store.getters["ingredients/getAll"];
+    });
     const search = () => {
-      const result = ingredients.filter((ingredient) => {
+      const result = ingredients.value.filter((ingredient) => {
         return ingredient.name
           .toLowerCase()
           .includes(searchQuery.value.toLowerCase());
@@ -78,6 +80,9 @@ export default {
   }
   &__results {
     font-size: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 }
 </style>

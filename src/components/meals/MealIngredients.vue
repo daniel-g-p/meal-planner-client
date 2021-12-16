@@ -7,6 +7,9 @@
       :id="ingredient.id"
       :name="ingredient.name"
       :unit="ingredient.unit"
+      :quantity="ingredient.quantity"
+      @set-quantity="setQuantity"
+      @remove="removeItem"
     >
     </meal-ingredients-item>
   </div>
@@ -29,6 +32,16 @@ export default {
         });
       },
     },
+  },
+  emits: ["set-quantity", "remove"],
+  setup(props, { emit }) {
+    const setQuantity = (ingredientId, quantity) => {
+      emit("set-quantity", ingredientId, quantity);
+    };
+    const removeItem = (ingredientId) => {
+      emit("remove", ingredientId);
+    };
+    return { setQuantity, removeItem };
   },
 };
 </script>
